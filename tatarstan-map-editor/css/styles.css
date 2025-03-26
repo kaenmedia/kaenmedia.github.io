@@ -1,0 +1,581 @@
+/* Основные стили */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+  box-sizing: border-box;
+  color: #333;
+}
+
+.app-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+}
+
+/* Боковая панель */
+.sidebar {
+  width: 350px;
+  height: 100%;
+  background: #f5f5f5;
+  border-right: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-header {
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+
+.sidebar-header h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+/* Табы */
+.tab-navigation {
+  display: flex;
+  border-bottom: 1px solid #ddd;
+}
+
+.tab-button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: #f0f0f0;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.tab-button:hover {
+  background: #e6e6e6;
+}
+
+.tab-button.active {
+  background: #fff;
+  border-bottom: 2px solid #4285f4;
+}
+
+.tab-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.tab-panel {
+  display: none;
+  padding: 15px;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+/* Карта */
+.map-container {
+  flex: 1;
+  position: relative;
+  height: 100%;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+}
+
+/* Скрытый холст для иконок */
+#iconCanvas {
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+}
+
+/* Списки */
+.dataset-list, .region-list, .point-list {
+  margin-bottom: 15px;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.empty-message {
+  padding: 15px;
+  text-align: center;
+  color: #666;
+  font-style: italic;
+}
+
+.empty-message p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.list-item {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.list-item-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.list-item-actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  font-size: 16px;
+  padding: 3px;
+}
+
+.list-item-actions button:hover {
+  color: #000;
+}
+
+/* Стили для элементов списка точек */
+.point-item {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.point-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.point-thumbnail {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 3px rgba(0,0,0,0.2);
+}
+
+.point-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.point-name {
+  font-weight: 500;
+}
+
+.point-city {
+  font-size: 12px;
+  color: #666;
+}
+
+.point-actions {
+  display: flex;
+  gap: 5px;
+}
+
+/* Формы и инпуты */
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.coordinate-pair, .point-coordinate-pair {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 5px;
+  align-items: center;
+}
+
+.coordinate-pair input {
+  flex: 1;
+}
+
+.remove-coord-btn {
+  background: #f44336;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  text-align: center;
+  line-height: 24px;
+  cursor: pointer;
+}
+
+/* Кнопки */
+.btn {
+  padding: 8px 12px;
+  background: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn:hover {
+  background: #3367d6;
+}
+
+.save-btn {
+  background: #0f9d58;
+}
+
+.save-btn:hover {
+  background: #0b8043;
+}
+
+.cancel-btn {
+  background: #db4437;
+}
+
+.cancel-btn:hover {
+  background: #c53929;
+}
+
+.add-dataset-btn, .add-region-btn, .add-point-btn {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.import-osm-btn {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  background-color: #FF9800;
+  color: white;
+}
+
+.import-osm-btn:hover {
+  background-color: #F57C00;
+}
+
+/* Модальное окно */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modal.show {
+  opacity: 1;
+}
+
+/* Когда модальное окно прозрачное, пропускаем клики */
+.modal:not(.show) {
+  pointer-events: none;
+}
+
+/* Содержимое модальное окна должно оставаться видимым при анимации */
+.modal:not(.show) .modal-content {
+  pointer-events: none;
+}
+
+.modal-content {
+  background: white;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+}
+
+.modal.show .modal-content {
+  transform: translateY(0);
+}
+
+.modal-header {
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.modal-header h3 {
+  margin: 0;
+}
+
+.modal-body {
+  padding: 15px;
+  overflow-y: auto;
+}
+
+.close-modal {
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+}
+
+.close-modal:hover {
+  color: #000;
+}
+
+/* Экспорт */
+.export-result {
+  margin-top: 15px;
+}
+
+#export-code {
+  width: 100%;
+  height: 300px;
+  margin-bottom: 10px;
+  font-family: monospace;
+  white-space: pre;
+  overflow: auto;
+  background: #f8f8f8;
+}
+
+/* Предварительный просмотр фото */
+.photo-preview {
+  margin-top: 10px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #eee;
+}
+
+.photo-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Полноэкранный попап */
+.fullscreen-popup {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  z-index: 2000;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.fullscreen-popup.show {
+  opacity: 1;
+}
+
+.popup-container {
+  background: white;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  margin: 5vh auto;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 5px 30px rgba(0,0,0,0.5);
+  transform: translateY(30px);
+  transition: transform 0.3s ease;
+}
+
+.fullscreen-popup.show .popup-container {
+  transform: translateY(0);
+}
+
+.popup-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  box-sizing: border-box;
+  border-bottom: 1px solid #ddd;
+}
+
+.popup-header .popup-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.popup-header .popup-close {
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-size: 24px;
+}
+
+.popup-content {
+  width: 100%;
+  max-width: 600px;
+  margin: 20px auto;
+  text-align: center;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.popup-avatar {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 15px;
+}
+
+.popup-person-name {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 5px 0;
+}
+
+.popup-person-city {
+  color: #777;
+  margin-bottom: 10px;
+}
+
+.popup-quote {
+  font-style: italic;
+  margin-bottom: 20px;
+}
+
+.popup-video {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 0 20px 0;
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  box-sizing: border-box;
+}
+
+.popup-video iframe {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+    height: auto;
+    max-height: 50vh;
+  }
+  
+  .map-container {
+    height: 50vh;
+  }
+}
+
+.region-color-preview {
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.region-color {
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  border: 1px solid #333;
+  display: inline-block;
+}
+
+.dataset-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.dataset-actions .btn {
+  padding: 4px 8px;
+  font-size: 14px;
+}
+
+.duplicate-btn {
+  background: #ff9800;
+  color: white;
+}
+
+.duplicate-btn:hover {
+  background-color: #45a049;
+}
+
+/* Стили для кнопок в списке датасетов */
+.btn-sm {
+  padding: 2px 5px;
+  font-size: 12px;
+  margin-right: 3px;
+}
+
+.set-active-btn {
+  background: #4CAF50;
+  color: white;
+}
+
+.edit-btn {
+  background: #2196F3;
+  color: white;
+}
+
+.delete-btn {
+  background: #f44336;
+  color: white;
+} 

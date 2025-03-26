@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Редактор карты Татарстана</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@latest/ol.css" type="text/css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <h2>Редактор карты</h2>
+      </div>
+      
+      <div class="tab-navigation">
+        <button class="tab-button active" data-tab="datasets">Датасеты</button>
+        <button class="tab-button" data-tab="regions">Регионы</button>
+        <button class="tab-button" data-tab="points">Точки</button>
+        <button class="tab-button" data-tab="export">Экспорт</button>
+      </div>
+      
+      <div class="tab-content">
+        <!-- Вкладка управления датасетами -->
+        <div class="tab-panel active" id="datasets-panel">
+          <h3>Датасеты</h3>
+          <div class="dataset-list" id="dataset-list"></div>
+          <button class="btn add-dataset-btn">Добавить датасет</button>
+        </div>
+        
+        <!-- Вкладка управления регионами -->
+        <div class="tab-panel" id="regions-panel">
+          <h3>Регионы</h3>
+          <div class="form-group">
+            <label for="region-dataset-select">Выберите датасет:</label>
+            <select id="region-dataset-select"></select>
+          </div>
+          <div id="region-list" class="region-list">
+            <div class="empty-message">
+              <p>Нет регионов в выбранном датасете.</p>
+            </div>
+          </div>
+          <button id="add-region-btn" class="btn add-region-btn">Добавить регион</button>
+          <button id="import-osm-id-btn" class="btn import-osm-btn">Импорт по OSM ID</button>
+        </div>
+        
+        <!-- Вкладка управления точками -->
+        <div class="tab-panel" id="points-panel">
+          <h3>Точки</h3>
+          <div class="point-controls">
+            <label>Датасет: 
+              <select id="point-dataset-select"></select>
+            </label>
+            <label>Регион: 
+              <select id="point-region-select"></select>
+            </label>
+          </div>
+          <div class="point-list" id="point-list"></div>
+          <button class="btn add-point-btn">Добавить точку</button>
+        </div>
+        
+        <!-- Вкладка экспорта -->
+        <div class="tab-panel" id="export-panel">
+          <h3>Экспорт HTML</h3>
+          <div class="export-controls">
+            <button class="btn export-btn">Сгенерировать HTML</button>
+          </div>
+          <div class="export-result">
+            <textarea id="export-code" readonly></textarea>
+            <button class="btn copy-btn">Копировать</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="map-container">
+      <div id="map"></div>
+      <canvas id="iconCanvas" width="64" height="64"></canvas>
+    </div>
+  </div>
+  
+  <!-- Модальные окна -->
+  <div class="modal" id="dataset-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Добавление датасета</h3>
+        <span class="close-modal">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="dataset-form">
+          <div class="form-group">
+            <label for="dataset-key">Ключ датасета:</label>
+            <input type="text" id="dataset-key" required>
+          </div>
+          <div class="form-group">
+            <label for="dataset-name">Название датасета:</label>
+            <input type="text" id="dataset-name" required>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn save-btn">Сохранить</button>
+            <button type="button" class="btn cancel-btn">Отмена</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal" id="region-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Добавление региона</h3>
+        <span class="close-modal">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="region-form">
+          <div class="form-group">
+            <label for="region-dataset">Датасет:</label>
+            <select id="region-dataset" required></select>
+          </div>
+          <div class="form-group">
+            <label for="region-name">Название региона:</label>
+            <input type="text" id="region-name" required>
+          </div>
+          <div class="form-group">
+            <label for="region-fill-color">Цвет заливки:</label>
+            <input type="color" id="region-fill-color" value="#ffa500">
+            <input type="range" id="region-fill-opacity" min="0" max="1" step="0.1" value="0.3">
+            <div class="region-color-preview">
+              <div class="region-color" id="region-color-preview"></div>
+              <small>Предпросмотр</small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="region-stroke-color">Цвет границы:</label>
+            <input type="color" id="region-stroke-color" value="#ff6400">
+          </div>
+          <div class="form-group">
+            <label>Координаты (WGS84):</label>
+            <div class="coordinates-container" id="coordinates-container">
+              <div class="coordinate-pair">
+                <input type="number" step="0.0001" placeholder="Долгота" class="lon-input" required>
+                <input type="number" step="0.0001" placeholder="Широта" class="lat-input" required>
+                <button type="button" class="remove-coord-btn">-</button>
+              </div>
+            </div>
+            <button type="button" class="btn add-coord-btn">Добавить точку</button>
+            <button type="button" class="btn draw-region-btn">Нарисовать на карте</button>
+            <button type="button" class="btn import-json-btn">Импортировать JSON из overpass-turbo.eu</button>
+            <textarea id="overpass-json" style="display: none; width: 100%; height: 100px; margin-top: 10px;" placeholder="Вставьте JSON из overpass-turbo.eu здесь..."></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn save-btn">Сохранить</button>
+            <button type="button" class="btn cancel-btn">Отмена</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal" id="point-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Добавление точки</h3>
+        <span class="close-modal">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="point-form">
+          <div class="form-group">
+            <label for="point-dataset">Датасет:</label>
+            <select id="point-dataset" required>
+              <!-- Будет заполнено динамически -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="point-region-select-modal">Регион:</label>
+            <select id="point-region-select-modal" required>
+              <!-- Будет заполнено динамически -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="point-name">Имя:</label>
+            <input type="text" id="point-name" required>
+          </div>
+          <div class="form-group">
+            <label for="point-city">Город:</label>
+            <input type="text" id="point-city">
+          </div>
+          <div class="form-group">
+            <label for="point-quote">Цитата:</label>
+            <textarea id="point-quote"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="point-photo">URL фото:</label>
+            <input type="url" id="point-photo" required>
+            <div class="photo-preview" id="photo-preview"></div>
+          </div>
+          <div class="form-group">
+            <label for="point-video">URL видео:</label>
+            <input type="url" id="point-video">
+          </div>
+          <div class="form-group">
+            <label for="point-coords">Координаты (WGS84):</label>
+            <div class="point-coordinate-pair">
+              <input type="number" step="0.0001" id="point-lon" placeholder="Долгота" required>
+              <input type="number" step="0.0001" id="point-lat" placeholder="Широта" required>
+              <button type="button" class="btn place-on-map-btn">Указать на карте</button>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn save-btn">Сохранить</button>
+            <button type="button" class="btn cancel-btn">Отмена</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="fullscreen-popup" id="fullscreenPopup">
+    <div class="popup-container">
+      <div class="popup-header">
+        <div class="popup-title">Информация о человеке</div>
+        <button class="popup-close" onclick="closeFullScreenPopup()">&times;</button>
+      </div>
+      <div class="popup-content" id="popupContent"></div>
+    </div>
+  </div>
+
+  <!-- Модальное окно редактирования датасета -->
+  <div class="modal" id="edit-dataset-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Редактирование названия датасета</h2>
+        <span class="close" data-modal="edit-dataset-modal">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="edit-dataset-form">
+          <input type="hidden" id="edit-dataset-key">
+          
+          <div class="form-group">
+            <label for="edit-dataset-name">Новое название датасета:</label>
+            <input type="text" id="edit-dataset-name" required>
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+            <button type="button" class="btn btn-cancel" data-modal="edit-dataset-modal">Отмена</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно импорта региона по OSM ID -->
+  <div class="modal" id="import-osm-id-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Импорт региона по OSM ID</h2>
+        <span class="close" data-modal="import-osm-id-modal">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="import-osm-id-form">
+          <p>Введите ID региона из OpenStreetMap (например: 3437391 для Казани)</p>
+          
+          <div class="form-group">
+            <label for="osm-relation-id">OSM Relation ID:</label>
+            <input type="text" id="osm-relation-id" required placeholder="Например: 3437391">
+          </div>
+          
+          <div class="form-group">
+            <label for="import-dataset-select">Выберите датасет:</label>
+            <select id="import-dataset-select" required></select>
+          </div>
+          
+          <div class="form-group">
+            <label for="import-region-name">Название региона:</label>
+            <input type="text" id="import-region-name" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="import-fill-color">Цвет заливки:</label>
+            <input type="color" id="import-fill-color" value="#3388ff">
+          </div>
+          
+          <div class="form-group">
+            <label for="import-fill-opacity">Прозрачность заливки:</label>
+            <input type="range" id="import-fill-opacity" min="0" max="1" step="0.1" value="0.3">
+          </div>
+          
+          <div class="form-group">
+            <label for="import-stroke-color">Цвет границы:</label>
+            <input type="color" id="import-stroke-color" value="#3388ff">
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Импортировать</button>
+            <button type="button" class="btn btn-cancel" data-modal="import-osm-id-modal">Отмена</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/ol@latest/dist/ol.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/dataset-form-handler.js"></script>
+</body>
+</html> 
